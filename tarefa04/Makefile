@@ -5,7 +5,7 @@ LDFLAGS = -lm
 
 all: seaofwords
 
-megasena: seaofwords.c
+seaofwords: seaofwords.c
 	gcc $(CFLAGS) seaofwords.c -o seaofwords $(LDFLAGS)
 
 clean:
