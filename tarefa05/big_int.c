@@ -1,19 +1,18 @@
 #include "big_int.h"
 
-void handle_no_memory_error()
+void handle_no_memory_error(void)
 {
 	fprintf(stderr, "INSUFFICIENT MEMORY");
 	exit(1);
 }
 
-big_int* create_big_int(int ArgDigit)
+big_int* create_big_int(void)
 {
 	node *pFirstDigit = malloc(sizeof(*pFirstDigit));
 
 	if (pFirstDigit == NULL)
 		handle_no_memory_error();
 
-	pFirstDigit->digit = ArgDigit;
 	pFirstDigit->previous = NULL;
 	pFirstDigit->next = NULL;
 
@@ -80,4 +79,32 @@ void pop_last(big_int *pBigInt)
 	free(tail);
 
 	return;
+}
+
+// big_int* add(big_int* BigInt_A, big_int* BigInt_B)
+// {
+// 	int carry;
+
+// }
+
+void big_int_to_string(big_int* BigInt, char* buffer)
+{
+	node *it;
+	int i;
+
+	for (it = BigInt->last, i = 0; it != BigInt->first; it = it->previous, i++)
+	{
+		buffer[i] = (char) it->digit + 48;
+	}
+
+	// append \0 to the end
+	buffer[i] = '\0';
+}
+
+void string_to_big_int(char* buffer, big_int* BigInt)
+{
+	int i;
+
+	for (i = 0; buffer[i] != '\0'; i++)
+		append_to_last(BigInt, (int) buffer[i] - 48);
 }
