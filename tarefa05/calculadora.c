@@ -1,5 +1,6 @@
 #include "big_int.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 int main(int argc, char const *argv[])
@@ -18,7 +19,7 @@ int main(int argc, char const *argv[])
 		string_to_big_int(buffer_a, strlen(buffer_a), A);
 		string_to_big_int(buffer_b, strlen(buffer_b), B);
 
-		big_int* result;
+		big_int* result = NULL;
 
 		switch (operation)
 		{
@@ -40,10 +41,19 @@ int main(int argc, char const *argv[])
 
 			default:
 				printf("Invalid operation\n");
+				break;
 		}
 
-		print_big_int(result);
-		destroy_big_int(result);
+		if (result != NULL)
+		{
+			// printf("printing result: ");
+			print_big_int(result);
+			destroy_big_int(result);
+			// printf("result destroyed...\n");
+		}
+
+		destroy_big_int(A);
+		destroy_big_int(B);
 	}
 
 	return 0;

@@ -23,6 +23,8 @@ calculadora: calculadora.c
 # teste_divide: teste_divide.c
 # 	gcc $(CFLAGS) big_int.c teste_divide.c -o teste_divide $(LDFLAGS)
 
+# teste_copy: teste_copy.c
+# 	gcc $(CFLAGS) big_int.c teste_copy.c -o teste_copy $(LDFLAGS)
 
 clean:
-	rm -f calculadora # teste_big_int teste_sum teste_subtract teste_multiply teste_divide
+	rm -f calculadora # teste_copy teste_big_int teste_sum teste_subtract teste_multiply teste_divide

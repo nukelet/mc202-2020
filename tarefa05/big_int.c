@@ -26,13 +26,13 @@ big_int* create_big_int(void)
 	pBigInt->last = pFirstDigit;
 
 	return pBigInt;
-
 }
 
 void destroy_big_int(big_int *pBigInt)
 {
 	node *it, *next = NULL;
 
+	// iterates through the list, destroying each element
 	for (it = pBigInt->first; it != pBigInt->last; it = next)
 	{
 		next = it->next;
@@ -46,6 +46,18 @@ void destroy_big_int(big_int *pBigInt)
 	free(pBigInt);
 
 	return;
+}
+
+big_int* get_copy_big_int(big_int* source)
+{
+	big_int* copy = create_big_int(); 
+
+	for (node *it = source->first->next; it != NULL; it = it->next)
+	{
+		append_to_last(copy, it->digit);
+	}	
+
+	return copy;
 }
 
 void append_to_last(big_int *pBigInt, int ArgDigit)
@@ -121,6 +133,8 @@ void big_int_to_string(big_int* BigInt, char* buffer, int buffer_size)
 
 	// append \0 to the end
 	buffer[i] = '\0';
+
+	return;
 }
 
 // TODO: consider destroying the big_int object beforehand?
@@ -137,20 +151,16 @@ void string_to_big_int(char* buffer, int buffer_size, big_int* BigInt)
 	// insert the actual number
 	for (int i = buffer_size - 1; i >= 0; i--)
 	{
-		// printf("i: %d; appending %c\n", i, buffer[i]);
-		// char ch;
-		// scanf("%c", &ch);
 		append_to_last(BigInt, (int) buffer[i] - 48);
 	}
 
 	// fill the rest of the list with 0's (to the left of MSD)
 	for (int i = 0; i < MAX_BIG_INT_SIZE - buffer_size; i++)
 	{
-		// printf("i: %d; appending 0\n", i);
-		// char ch;
-		// scanf("%c", &ch);
 		append_to_last(BigInt, 0);
 	}
+
+	return;
 }
 
 void print_big_int(big_int* BigInt)
@@ -164,7 +174,6 @@ void print_big_int(big_int* BigInt)
 	{
 		if (buffer[i] == '0' && flag == 1)
 		{
-			// printf("lendo: %c\n", buffer[i]);
 			continue;
 		}
 
@@ -176,6 +185,8 @@ void print_big_int(big_int* BigInt)
 		printf("0");
 
 	printf("\n");
+
+	return;
 }
 
 
@@ -187,14 +198,11 @@ big_int* add(big_int* A, big_int* B)
 
 	// set iterators to least significant bits
 	node *it_a = A->first->next, *it_b = B->first->next;
-	// node *it_sum = Sum->first;
 
 	for (int i = 0; i < MAX_BIG_INT_SIZE; i++, it_a = it_a->next, it_b = it_b->next)
 	{
 		sum = it_a->digit + it_b->digit + carry;
 		carry = sum/10;
-		// printf("somando %d e %d \n sum: %d; carry: %d;\n\n",
-		// 		it_a->digit, it_b->digit, sum, carry);
 		append_to_last(Sum, sum%10);
 	}
 	
@@ -209,12 +217,10 @@ big_int* max_big_int(big_int* A, big_int* B)
 	{
 		if (it_a->digit > it_b->digit)
 		{
-			// printf("first is bigger\n");
 			return A;
 		}
 		else if (it_b->digit > it_a->digit)
 		{
-			// printf("second is bigger\n");
 			return B;
 		}
 	}
@@ -230,14 +236,12 @@ big_int* subtract(big_int* A, big_int* B)
 
 	if (max_big_int(A, B) == A)
 	{
-		// printf("first is bigger\n");
 		it_max = A->first->next;
 		it_min = B->first->next;
 	}
 
 	else
 	{
-		// printf("second is bigger\n");
 		it_max = B->first->next;
 		it_min = A->first->next;
 	}
@@ -278,29 +282,21 @@ big_int* multiply(big_int* A, big_int* B)
 		big_int* dummy = create_big_int();
 
 		it_a = A->first->next;
-		// int digit_b = it_b->digit;
 		int product, carry = 0;
 
 		for (int j = 0; j < MAX_BIG_INT_SIZE; j++, it_a = it_a->next)
 		{
 			product = it_a->digit * it_b->digit + carry;
 			carry = product/10;
-			// printf("appending %d\n-----------------\n", product%10);
 			append_to_last(dummy, product%10);
 		}
 
-		// printf("dummy before left-shift:"); print_big_int(dummy);
-
-		// left shift
+		// left shift, i.e., multiplication by 10
 		for (int j = 0; j < i; j++)
 		{
-			// printf("i = %d, j = %d, left-shifting...\n", i, j);
-			// printf("dando left-shift em "); print_big_int(dummy);
 			append_to_head(dummy, 0);
 			pop_last(dummy);
 		}
-
-		// printf("dummy after left-shift:"); print_big_int(dummy); printf("\n");
 
 		big_int* tmp = Product;
 		Product = add(Product, dummy);
@@ -312,11 +308,12 @@ big_int* multiply(big_int* A, big_int* B)
 	return Product;
 }
 
-// simple division algorithm: basically count how many
+// naive (slow) division algorithm: counts how many
 // times you can remove B from A
 big_int* divide(big_int* A, big_int* B)
 {
-	big_int *dummy = A;
+	A = get_copy_big_int(A);
+	B = get_copy_big_int(B);
 
 	big_int *Quotient = create_big_int();
 	string_to_big_int("0", strlen("0"), Quotient);
@@ -324,20 +321,36 @@ big_int* divide(big_int* A, big_int* B)
 	big_int *one = create_big_int();
 	string_to_big_int("1", strlen("1"), one);
 
-	while (max_big_int(dummy, B) == dummy)
+	big_int *check_one;
+	check_one = subtract(one, B);
+
+	// avoids calculating A divided by 1 directly
+	if (max_big_int(Quotient, check_one) != check_one)
 	{
-		big_int *tmp = dummy;
-		dummy = subtract(dummy, B);
+		destroy_big_int(B);
+
+		destroy_big_int(Quotient);
+		destroy_big_int(one);
+		destroy_big_int(check_one);
+
+		return A;
+	}
+
+	while (max_big_int(A, B) == A)
+	{
+		big_int *tmp = A;
+		A = subtract(A, B);
 		destroy_big_int(tmp);
 
 		tmp = Quotient;
 		Quotient = add(Quotient, one);
 		destroy_big_int(tmp);
-
-		// printf("dummy: "); print_big_int(dummy);
-		// printf("Quotient "); print_big_int(Quotient);
-		// char c; scanf("%c", &c);
 	}
+
+	destroy_big_int(A);
+	destroy_big_int(B);
+	destroy_big_int(one);
+	destroy_big_int(check_one);
 
 	return Quotient;
 }
