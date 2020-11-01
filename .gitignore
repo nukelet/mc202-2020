@@ -3,6 +3,8 @@
 tarefa*/testes/*.out
 \.*
 
+working/
+
 tarefa00/bomdia
 tarefa00/boanoite
 

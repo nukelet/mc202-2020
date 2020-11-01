@@ -8,6 +8,9 @@
 	big_int is a linked list of digits
 */
 
+// max number of decimal places
+#define MAX_BIG_INT_SIZE 48
+
 // link is a pointer to a node
 // typedef struct node_* p_node;
 
@@ -38,12 +41,14 @@ big_int* create_big_int(void);
 void destroy_big_int(big_int *pBigInt);
 
 void append_to_last(big_int *pBigInt, int ArgDigit);
+void append_to_head(big_int *pBigInt, int ArgDigit);
 void pop_last(big_int *pBigInt);
 
 
 // arithmetic operations
+big_int* max_big_int(big_int* A, big_int* B);
 
-big_int* add(big_int* BigInt_A, big_int* BigInt_B);
+big_int* add(big_int* A, big_int* B);
 big_int* subtract(big_int* BigInt_A, big_int* BigInt_B);
 big_int* multiply(big_int* BigInt_A, big_int* BigInt_B);
 big_int* divide(big_int* BigInt_A, big_int* BigInt_B);
@@ -58,11 +63,12 @@ big_int* divide(big_int* BigInt_A, big_int* BigInt_B);
 	size 49
 */
 
-void big_int_to_string(big_int* BigInt, char* buffer);
+void big_int_to_string(big_int* BigInt, char* buffer, int buffer_size);
 
 // dumps a number in a char buffer into a big_int object
 // >> the big_int is assumed to be empty <<
-void string_to_big_int(char* buffer, big_int* BigInt);
+void string_to_big_int(char* buffer, int buffer_size, big_int* BigInt);
 
+void print_big_int(big_int* BigInt);
 
 #endif
