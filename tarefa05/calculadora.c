@@ -37,7 +37,7 @@ int main(int argc, char const *argv[])
 
 			case '/':
 				// result = divide(A, B);
-				string_to_big_int("0", strlen("0"), result);
+				// string_to_big_int("0", strlen("0"), result);
 				break;
 
 			default:
