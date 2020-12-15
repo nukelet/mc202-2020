@@ -67,6 +67,7 @@ void ht_destroy(hash_table* t)
 		list_destroy(t->table[i]);
 	}
 
+	free(t->table);
 	free(t);
 }
 
